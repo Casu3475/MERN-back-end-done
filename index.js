@@ -43,13 +43,10 @@ app.get("/jwtid", requiredAuth, (req, res) => {
 
 // connect to mongodb
 mongoose
-  .connect(
-    "mongodb+srv://rom:MONGO_r223475@casu.usuxxbd.mongodb.net/rom_db?retryWrites=true&w=majority",
-    {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    }
-  )
+  .connect("mongodb+srv://", {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
   .then(() =>
     app.listen(5000, () => console.log(`Connected to MongoDB on Port 5000`))
   )
