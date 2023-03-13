@@ -3,7 +3,7 @@ import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-// import cors from "cors";
+import cors from "cors";
 import { checkUser, requiredAuth } from "./middleware/AuthMiddleware.js";
 
 // INDEX --> ROUTES --> controllers --> models --> DB
@@ -12,6 +12,17 @@ import PostRoutes from "./routes/PostRoutes.js";
 
 // initializations
 const app = express();
+
+const corsOptions = {
+  origin: process.env.CLIENT_URL,
+  credentials: true,
+  allowedHeaders: ["sessionId", "Content-Type"],
+  exposedHeaders: ["sessionId"],
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  preflightContinue: false,
+};
+
+app.use(cors(corsOptions));
 
 // middleware
 app.use(bodyParser.json({ limit: "50mb", extended: true }));

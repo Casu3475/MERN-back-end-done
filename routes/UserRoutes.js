@@ -16,7 +16,6 @@ import {
 import { uploadProfile } from "../controllers/UploadController.js"; // ROUTES --> CONTROLLERS
 
 const router = express.Router();
-
 const upload = multer();
 
 // auth

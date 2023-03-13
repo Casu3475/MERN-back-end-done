@@ -1,21 +1,54 @@
 import PostModel from "../models/postModel.js";
 import UserModel from "../models/userModel.js";
 import { ObjectId } from "mongodb";
+import { uploadErrors } from "../utils/errors.utils.js";
+import fs from "fs";
+import { promisify } from "util";
+import { pipeline as pipelineCallback } from "stream";
+import path from "path";
 // import bcrypt from "bcrypt";
 // import jwt from 'jsonwebtoken'
 
 // ------------------
 // Create a Post
 // ------------------
+const pipeline = promisify(pipelineCallback);
+
 export const createPost = async (req, res) => {
+  let fileName;
+  if (req.file !== null) {
+    try {
+      if (
+        req.file.detectedMimeType != "image/jpg" &&
+        req.file.detectedMimeType != "image/png" &&
+        req.file.detectedMimeType != "image/jpeg"
+      )
+        throw Error("invalid file");
+
+      if (req.file.size > 500000) throw Error("max size");
+    } catch (err) {
+      const errors = uploadErrors(err);
+      return res.status(400).json({ errors });
+    }
+    fileName = req.body.posterId + Date.now() + ".jpg";
+
+    await pipeline(
+      req.file.stream,
+      fs.createWriteStream(
+        `${process.cwd()}/client/public/uploads/posts/${fileName}`
+      )
+    );
+  }
+
   const newPost = new PostModel({
     posterId: req.body.posterId,
     message: req.body.message,
-    // picture: req.body.picture,
+    picture: req.file !== null ? "./uploads/posts/" + fileName : "",
     video: req.body.video,
     likers: [],
     comments: [],
   });
+
   try {
     const savedPost = await newPost.save();
     res.status(201).json(savedPost);

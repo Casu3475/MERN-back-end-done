@@ -12,12 +12,14 @@ import {
   editPostComment,
   deletePostComment,
 } from "../controllers/PostController.js"; // ROUTES --> CONTROLLERS
+import multer from "multer";
+const upload = multer();
 
 const router = express.Router();
 
 // posts
 router.get("/", readPost);
-router.post("/", createPost);
+router.post("/", upload.single("file"), createPost);
 router.put("/:id", updatePost);
 router.delete("/:id", deletePost);
 router.patch("/like-post/:id", likePost);
